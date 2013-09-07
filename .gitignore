@@ -1,0 +1,10 @@
+Release/
+Debug/
+bin/
+obj/
+*.depend
+*.layout
+*.ncb
+*.aps
+*.suo
+*.*~
