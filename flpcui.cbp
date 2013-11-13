@@ -34,6 +34,8 @@
 		</Compiler>
 		<Linker>
 			<Add option="`fltk-config --use-images --ldstaticflags`" />
+			<Add library="jpeg" />
+			<Add library="png" />
 		</Linker>
 		<Unit filename="flpcui.cpp" />
 		<Unit filename="flpcui.h" />
