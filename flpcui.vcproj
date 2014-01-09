@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fltk.lib fltk_jpeg.lib fltk_png.lib"
+				AdditionalDependencies="winmm.lib fltk.lib fltk_jpeg.lib fltk_png.lib"
 				OutputFile="$(OutDir)/flpcui.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Projects\libs\fltk-1.3\lib&quot;"
@@ -84,7 +84,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fltk.lib fltk_images.lib"
+				AdditionalDependencies="winmm.lib fltk.lib fltk_images.lib"
 				OutputFile="$(OutDir)/flpcui.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Projects\libs\fltk-1.3\lib&quot;"
