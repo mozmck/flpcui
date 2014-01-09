@@ -10,7 +10,7 @@ Compiler:          Microsoft VC 6/7, Microsoft VS2008, Microsoft VS2010,
 
 Author:            Martin Maurer (Martin.Maurer@clibb.de)
 
-Copyright:         (c) Martin Maurer 2003-2013, All rights reserved
+Copyright:         (c) Martin Maurer 2003-2014, All rights reserved
 Portions Copyright (c) by Aeolus Development 2004 http://www.aeolusdevelopment.com
 
     This file is part of lpc21isp.
@@ -388,15 +388,34 @@ Change-History:
                   Bugfix for wrong check of word0/word1 combination
                   Correct a lot entries in lpc property table of LPC18xx and LPC43xx
                   LPC18xx and LPC43xx: Add warning message, that wipe erases only bank A
-1.95   2013-09-06 Moses McKnight
+1.95   2014-01-08 Martin Maurer
+                  Add a lot of new chip ids for LPC1763, LPC11Exx, LPC11Uxx
+                  (completely untested because I don't have these chips)
+                  Corrected checking of 2 field chip ids (must be masked)
+                  Corrected Makefile (-static)
+                  Move while directory with files into a subdirectory
+1.96   2014-01-08 Martin Maurer merged changes by Moses McKnight
                   Added devices: LPC1315, LPC1316, LPC1317, LPC1345, LPC1346, LPC1347
-
+                  Add .gitignore file (MM: Removed *.layout)
+                  Remove lpc21isp.depend
+       2014-01-08 Martin Maurer merged bugfix by smartavionics:
+                  - Wrong length in ReceiveComPort
+                  - Enable SerialTimeoutTick
+       2014-01-08 Martin Maurer merged bugfix by justyn:
+                  - Fix the total sector size fields for 1114.../323 and 1114.../333
+       2014-01-08 Martin Maurer merged bugfix by imyller:
+                  - Support for bad UARTs: added -writedelay command-line switch
+1.97   2014-01-09 Martin Maurer
+                  Add some new chip ids for LPC11xx
+                  Updated .gitignore file (Now with ignored *.layout)
+                  Removed *.layout from lpc21isp project
+                  Removed *.depend from lpc21isp project
 */
 
 // Please don't use TABs in the source code !!!
 
 // Don't forget to update the version string that is on the next line
-#define VERSION_STR "1.95"
+#define VERSION_STR "1.97"
 
 #if defined COMPILE_FOR_WINDOWS || defined COMPILE_FOR_CYGWIN
 static char RxTmpBuf[256];        // save received data to this buffer for half-duplex
@@ -726,6 +745,11 @@ void SendComPortBlock(ISP_ENVIRONMENT *IspEnvironment, const void *s, size_t n)
     write(IspEnvironment->fdCom, s, n);
 
 #endif // defined COMPILE_FOR_LINUX || defined COMPILE_FOR_LPC21
+
+    if (IspEnvironment->WriteDelay == 1)
+    {
+        Sleep(100); // 100 ms delay after each block (makes lpc21isp to work with bad UARTs)
+    }
 }
 
 /***************************** SendComPort ******************************/
@@ -741,7 +765,6 @@ void SendComPort(ISP_ENVIRONMENT *IspEnvironment, const char *s)
 /**  Performs a timer tick.  In this simple case all we do is count down
 with protection against underflow and wrapping at the low end.
 */
-#if defined COMPILE_FOR_WINDOWS || defined COMPILE_FOR_CYGWIN
 static void SerialTimeoutTick(ISP_ENVIRONMENT *IspEnvironment)
 {
     if (IspEnvironment->serial_timeout_count <= 1)
@@ -753,7 +776,6 @@ static void SerialTimeoutTick(ISP_ENVIRONMENT *IspEnvironment)
         IspEnvironment->serial_timeout_count--;
     }
 }
-#endif
 
 /***************************** ReceiveComPortBlock **********************/
 /**  Receives a buffer from the open com port. Returns all the characters
@@ -832,12 +854,10 @@ static void ReceiveComPortBlock(ISP_ENVIRONMENT *IspEnvironment,
     sprintf(tmp_string, "Read(Length=%ld): ", (*real_size));
     DumpString(5, answer, (*real_size), tmp_string);
 
-#if defined COMPILE_FOR_WINDOWS || defined COMPILE_FOR_CYGWIN
     if (*real_size == 0)
     {
         SerialTimeoutTick(IspEnvironment);
     }
-#endif
 }
 
 
@@ -1213,7 +1233,7 @@ void ReceiveComPort(ISP_ENVIRONMENT *IspEnvironment,
         if (residual_data[0] == '\0')
         {
             /* Receive new data */
-            ReceiveComPortBlock(IspEnvironment, Answer + (*RealSize), MaxSize - 1 - (*RealSize), &tmp_realsize);
+            ReceiveComPortBlock(IspEnvironment, Answer + (*RealSize), MaxSize - (*RealSize), &tmp_realsize);
         }
         else
         {
@@ -1443,6 +1463,13 @@ static void ReadArguments(ISP_ENVIRONMENT *IspEnvironment, unsigned int argc, ch
                 continue;
             }
 
+            if (stricmp(argv[i], "-writedelay") == 0)
+            {
+                IspEnvironment->WriteDelay = 1;
+                DebugPrintf(3, "Write delay enabled.\n");
+                continue;
+            }
+
             if (stricmp(argv[i], "-ADARM") == 0)
             {
                 IspEnvironment->micro = ANALOG_DEVICES_ARM;
@@ -1555,6 +1582,7 @@ static void ReadArguments(ISP_ENVIRONMENT *IspEnvironment, unsigned int argc, ch
                        "                      sector. To detect errors in writing to Flash ROM\n"
                        "         -logfile     for enabling logging of terminal output to lpc21isp.log\n"
                        "         -halfduplex  use halfduplex serial communication (i.e. with K-Line)\n"
+                       "         -writedelay  Add delay after serial port writes (for compatibility)\n"
                        "         -ADARM       for downloading to an Analog Devices\n"
                        "                      ARM microcontroller ADUC70xx\n"
                        "         -NXPARM      for downloading to a chip of NXP LPC family (default)\n");

@@ -12,7 +12,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS =  `fltk-config --cxxflags` -fexceptions -D_THREAD_SAFE -D_REENTRANT
+CFLAGS =  `fltk-config --cxxflags` -fexceptions -D_THREAD_SAFE -D_REENTRANT -DINTEGRATED_IN_WIN_APP
 RESINC = 
 LIBDIR = 
 LIB = 
@@ -30,7 +30,7 @@ DEP_DEBUG =
 OUT_DEBUG = bin/Debug/flpcui
 
 INC_RELEASE =  $(INC)
-CFLAGS_RELEASE =  $(CFLAGS) -O2 -s
+CFLAGS_RELEASE =  $(CFLAGS) -O3 -s
 RESINC_RELEASE =  $(RESINC)
 RCFLAGS_RELEASE =  $(RCFLAGS)
 LIBDIR_RELEASE =  $(LIBDIR)

@@ -21,9 +21,12 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 					<Add option="-s" />
 				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
@@ -31,6 +34,7 @@
 			<Add option="-fexceptions" />
 			<Add option="-D_THREAD_SAFE" />
 			<Add option="-D_REENTRANT" />
+			<Add option="-DINTEGRATED_IN_WIN_APP" />
 		</Compiler>
 		<Linker>
 			<Add option="`fltk-config --use-images --ldstaticflags`" />
