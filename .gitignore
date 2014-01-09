@@ -4,6 +4,7 @@ bin/
 obj/
 *.depend
 *.layout
+*.sln
 *.ncb
 *.aps
 *.suo
